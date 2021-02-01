@@ -8,8 +8,42 @@ import (
 	"net/http"
 	"strings"
 	"log"
+	"os"
+	"io/ioutil"
 )
 
+type Config struct {
+	Api string `json:"api"`
+	Ssl bool `json:"ssl"`
+	Sslcrt string `json:"sslcert"`
+	Sslkey string `json:"sslkey"`
+}
+var config Config
+
+func (config *Config) ReadConfig() {
+
+	jsonFile, err := os.Open("conf/default.conf")
+
+	if err != nil{fmt.Println(err)}
+	fmt.Println("Open OK")
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	
+	json.Unmarshal(byteValue,&config)
+
+	fmt.Println(config.Api)
+
+	/*  acceso directo
+	var result map[string]interface{}
+	json.Unmarshal([]byte(byteValue), &result)
+
+    fmt.Println(result["api"])
+	*/
+
+
+}
 // Create a struct that mimics the webhook response body
 // https://core.telegram.org/bots/api#update
 type webhookReqBody struct {
@@ -72,7 +106,7 @@ func sayPolo(chatID int64) error {
 	}
 
 	// Send a post request with your token
-	res, err := http.Post("https://api.telegram.org/bot<api>/sendMessage", "application/json", bytes.NewBuffer(reqBytes))
+	res, err := http.Post("https://api.telegram.org/bot"+config.Api+"/sendMessage", "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return err
 	}
@@ -85,8 +119,12 @@ func sayPolo(chatID int64) error {
 
 // FInally, the main funtion starts our server on port 3000
 func main() {
-	httpON := false
-	if httpON   {
+	
+	config.ReadConfig()
+	fmt.Println("config.Api")
+	fmt.Println("https://api.telegram.org/bot"+config.Api+"/sendMessage")
+
+	if config.Ssl == false {
 		fmt.Println("http")
 		http.ListenAndServe(":3001", http.HandlerFunc(Handler))
 	} else {
