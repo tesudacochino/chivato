@@ -5,45 +5,49 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
-	"strings"
-	"log"
-	"os"
 	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"strings"
 )
 
+// Config configuracion
 type Config struct {
-	Api string `json:"api"`
-	Ssl bool `json:"ssl"`
+	Apikey string `json:"api"`
+	Ssl    bool   `json:"ssl"`
 	Sslcrt string `json:"sslcert"`
 	Sslkey string `json:"sslkey"`
 }
+
 var config Config
 
+// ReadConfig read the config
 func (config *Config) ReadConfig() {
 
 	jsonFile, err := os.Open("conf/default.conf")
 
-	if err != nil{fmt.Println(err)}
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println("Open OK")
 	defer jsonFile.Close()
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	
-	json.Unmarshal(byteValue,&config)
+	json.Unmarshal(byteValue, &config)
 
-	fmt.Println(config.Api)
+	fmt.Println(config.Apikey)
 
 	/*  acceso directo
-	var result map[string]interface{}
-	json.Unmarshal([]byte(byteValue), &result)
+		var result map[string]interface{}
+		json.Unmarshal([]byte(byteValue), &result)
 
-    fmt.Println(result["api"])
+	    fmt.Println(result["api"])
 	*/
 
-
 }
+
 // Create a struct that mimics the webhook response body
 // https://core.telegram.org/bots/api#update
 type webhookReqBody struct {
@@ -55,10 +59,10 @@ type webhookReqBody struct {
 	} `json:"message"`
 }
 
-// This handler is called everytime telegram sends us a webhook event
+// Handler is called everytime telegram sends us a webhook event
 func Handler(res http.ResponseWriter, req *http.Request) {
 	// First, decode the JSON response body
-		body := &webhookReqBody{}
+	body := &webhookReqBody{}
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
 		fmt.Println("could not decode request body", err)
 		return
@@ -106,7 +110,7 @@ func sayPolo(chatID int64) error {
 	}
 
 	// Send a post request with your token
-	res, err := http.Post("https://api.telegram.org/bot"+config.Api+"/sendMessage", "application/json", bytes.NewBuffer(reqBytes))
+	res, err := http.Post("https://api.telegram.org/bot"+config.Apikey+"/sendMessage", "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return err
 	}
@@ -119,10 +123,10 @@ func sayPolo(chatID int64) error {
 
 // FInally, the main funtion starts our server on port 3000
 func main() {
-	
+
 	config.ReadConfig()
 	fmt.Println("config.Api")
-	fmt.Println("https://api.telegram.org/bot"+config.Api+"/sendMessage")
+	fmt.Println("https://api.telegram.org/bot" + config.Apikey + "/sendMessage")
 
 	if config.Ssl == false {
 		fmt.Println("http")
