@@ -11,7 +11,7 @@ https://api.telegram.org/bot\<api\>/deleteWebhook
   
 Get Webhook info
 
-https://api.telegram.org/bot<api>/getWebhookInfo
+https://api.telegram.org/bot\<api\>/getWebhookInfo
 
 curl -F "url=$WEBHOOK"  https://api.telegram.org/bot\<api\>/setWebhook
 
