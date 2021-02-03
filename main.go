@@ -14,18 +14,26 @@ import (
 
 // Config configuracion
 type Config struct {
+	file   string
 	Apikey string `json:"api"`
 	Ssl    bool   `json:"ssl"`
-	Sslcrt string `json:"sslcert"`
+	Sslcrt string `json:"sslcrt"`
 	Sslkey string `json:"sslkey"`
 }
 
-var config Config
+// GetFileConfig get file config
+func (config *Config) GetFileConfig() {
+	config.file = "conf/development.conf"
+	if _, err := os.Stat("conf/development.conf"); os.IsNotExist(err) {
+		config.file = "conf/default.conf"
+	}
+}
 
 // ReadConfig read the config
 func (config *Config) ReadConfig() {
+	config.GetFileConfig()
 
-	jsonFile, err := os.Open("conf/default.conf")
+	jsonFile, err := os.Open(config.file)
 
 	if err != nil {
 		fmt.Println(err)
@@ -121,9 +129,12 @@ func sayPolo(chatID int64) error {
 	return nil
 }
 
+var config Config
+
 // FInally, the main funtion starts our server on port 3000
 func main() {
-
+	// TODO remove global variable
+	//	var config Config
 	config.ReadConfig()
 	fmt.Println("config.Api")
 	fmt.Println("https://api.telegram.org/bot" + config.Apikey + "/sendMessage")
@@ -133,6 +144,6 @@ func main() {
 		http.ListenAndServe(":3001", http.HandlerFunc(Handler))
 	} else {
 		fmt.Println("https")
-		log.Fatal(http.ListenAndServeTLS(":3001", "ssl/localhost.crt", "ssl/localhost.key", http.HandlerFunc(Handler)))
+		log.Fatal(http.ListenAndServeTLS(":3001", config.Sslcrt, config.Sslkey, http.HandlerFunc(Handler)))
 	}
 }
