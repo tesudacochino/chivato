@@ -20,3 +20,7 @@ curl -s -X POST "https://api.telegram.org/bot\<api\>/sendMessage" -d chat_id=$ID
 curl -s -X POST "https://api.telegram.org/bot\<api\>/sendMessage" -d chat_id=$ID2 -d text="$1"
   
 curl -F "url=$WEBHOOK"  https://api.telegram.org/bot\<api\>/setWebhook .
+
+Configure env Linux/mac
+go env -w GO111MODULE="on"
+go env -w GOPATH=$(dirname $(dirname $(pwd)))
