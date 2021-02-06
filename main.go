@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"chivato/configure"
+	"chivato/message"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -94,11 +95,22 @@ func main() {
 	fmt.Println("---" + config.File + " ---")
 	//fmt.Println("https://api.telegram.org/bot" + config.Apikey + "/sendMessage")
 
-	if config.SslEnable == false {
-		fmt.Println("http")
-		http.ListenAndServe(":3001", http.HandlerFunc(Handler))
+	if config.WebhookEnable == true {
+		if config.SslEnable == false {
+			fmt.Println("http")
+			http.ListenAndServe(":3001", http.HandlerFunc(Handler))
+		} else {
+			fmt.Println("https")
+			log.Fatal(http.ListenAndServeTLS(":3001", config.Sslcrt, config.Sslkey, http.HandlerFunc(Handler)))
+		}
 	} else {
-		fmt.Println("https")
-		log.Fatal(http.ListenAndServeTLS(":3001", config.Sslcrt, config.Sslkey, http.HandlerFunc(Handler)))
+		/*
+			println("voy yo a por los datos https://api.telegram.org/bot" + config.Apikey + "/getWebhookInfo")
+			// https://api.telegram.org/bot1615747510:AAHXw9fqBR2OIlkVubV14Z0_Gu0Hhfzm8Gk/getWebhookInfo
+			resp, err := http.Get("https://api.telegram.org/bot" + config.Apikey + "/getWebhookInfo")
+			println(err)
+			println(resp)
+		*/
+		println(message.DeleteWebhookInfo(config.Apikey))
 	}
 }
