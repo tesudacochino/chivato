@@ -112,5 +112,6 @@ func main() {
 			println(resp)
 		*/
 		println(message.DeleteWebhookInfo(config.Apikey))
+		println(message.GetUpdates(config.Apikey))
 	}
 }
