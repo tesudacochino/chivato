@@ -91,10 +91,10 @@ func main() {
 	// TODO remove global variable
 	//	var config Config
 	config.ReadConfig()
-	fmt.Println("config.Api")
-	fmt.Println("https://api.telegram.org/bot" + config.Apikey + "/sendMessage")
+	fmt.Println("---" + config.File + " ---")
+	//fmt.Println("https://api.telegram.org/bot" + config.Apikey + "/sendMessage")
 
-	if config.Ssl == false {
+	if config.SslEnable == false {
 		fmt.Println("http")
 		http.ListenAndServe(":3001", http.HandlerFunc(Handler))
 	} else {
