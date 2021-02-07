@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type webhookInfopMessage struct {
+type messageWebhookInfo struct {
 	Ok     bool `json:"ok"`
 	Result struct {
 		URL                  string `json:"url"`
@@ -21,7 +21,7 @@ type webhookInfopMessage struct {
 	} `json:"result"`
 }
 
-type deleteWebHookMessage struct {
+type messageDeleteWebHook struct {
 	Ok          bool   `json:"ok"`
 	Result      bool   `json:"result"`
 	Description string `json:"description"`
@@ -50,6 +50,12 @@ type messageList struct {
 	} `json:"result"`
 }
 
+type messgeActivate struct {
+	Ok          bool   `json:"ok"`
+	Result      bool   `json:"result"`
+	Description string `json:"description"`
+}
+
 func request(Apikey string, command string) []byte {
 	var url = "https://api.telegram.org/bot" + Apikey + "/" + command
 
@@ -76,6 +82,7 @@ func request(Apikey string, command string) []byte {
 		log.Fatal(readErr)
 	}
 
+	println(string(body))
 	return (body)
 
 	/*jsonErr := json.Unmarshal(body, &answer)
@@ -85,9 +92,9 @@ func request(Apikey string, command string) []byte {
 
 }
 
-func getWebhookInfo(Apikey string) {
+func GetWebhookInfo(Apikey string) {
 
-	var answer webhookInfopMessage
+	var answer messageWebhookInfo
 
 	body := request(Apikey, "getWebhookInfo")
 
@@ -96,13 +103,25 @@ func getWebhookInfo(Apikey string) {
 		log.Fatal(jsonErr)
 	}
 
-	println(answer.Result.URL)
-
 }
 
-func DeleteWebhookInfo(Apikey string) bool {
+func ActivateWebhook(Apikey string, domain string) bool {
+	// https://api.telegram.org/bot[TU_TOKEN]/setWebhook?url=https://[TU_DOMINIO]/[CAMINO_AL_WEBHOOK]
+	var answer messgeActivate
+
+	body := request(Apikey, "setWebhook?url="+domain)
+
+	jsonErr := json.Unmarshal(body, &answer)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+	}
+
+	return answer.Ok
+}
+
+func DeleteWebhook(Apikey string) bool {
 	//var url = "https://api.telegram.org/bot" + Apikey + "/deleteWebhook"
-	var answer deleteWebHookMessage
+	var answer messageDeleteWebHook
 
 	body := request(Apikey, "deleteWebhook")
 
@@ -110,10 +129,7 @@ func DeleteWebhookInfo(Apikey string) bool {
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 	}
-
-	println(answer.Description)
 	return answer.Ok
-
 }
 
 func GetUpdates(Apikey string) bool {
@@ -126,7 +142,6 @@ func GetUpdates(Apikey string) bool {
 		log.Fatal(jsonErr)
 	}
 
-	println(answer.Ok)
 	return answer.Ok
 
 }
