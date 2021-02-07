@@ -14,6 +14,7 @@ type Config struct {
 	SslEnable     bool   `json:"ssl"`
 	Sslcrt        string `json:"sslcrt"`
 	Sslkey        string `json:"sslkey"`
+	Port          string `json:"port"`
 	WebhookEnable bool   `json:"webhook"`
 	Webhookurl    string `json:"webhookurl"`
 }

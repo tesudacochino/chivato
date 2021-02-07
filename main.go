@@ -97,13 +97,13 @@ func main() {
 	//fmt.Println("https://api.telegram.org/bot" + config.Apikey + "/sendMessage")
 
 	if config.WebhookEnable == true {
-		println("Activado" + strconv.FormatBool(message.ActivateWebhook(config.Apikey, config.Webhookurl)))
+		println("Activado: " + strconv.FormatBool(message.ActivateWebhook(config.Apikey, config.Webhookurl)))
 		if config.SslEnable == false {
 			fmt.Println("http")
-			http.ListenAndServe(":3001", http.HandlerFunc(Handler))
+			http.ListenAndServe(":"+config.Port, http.HandlerFunc(Handler))
 		} else {
 			fmt.Println("https")
-			log.Fatal(http.ListenAndServeTLS(":3001", config.Sslcrt, config.Sslkey, http.HandlerFunc(Handler)))
+			log.Fatal(http.ListenAndServeTLS(":"+config.Port, config.Sslcrt, config.Sslkey, http.HandlerFunc(Handler)))
 		}
 	} else {
 
