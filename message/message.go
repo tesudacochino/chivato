@@ -39,16 +39,54 @@ type messageList struct {
 				FirstName    string `json:"first_name"`
 				LanguageCode string `json:"language_code"`
 			} `json:"from"`
-			Chat struct {
-				ID        int    `json:"id"`
-				FirstName string `json:"first_name"`
-				Type      string `json:"type"`
-			} `json:"chat"`
+			//		Chat chat   `json:"chat"`
 			Date int    `json:"date"`
 			Text string `json:"text"`
 		} `json:"message"`
 	} `json:"result"`
 }
+
+type chat struct {
+	ID        int64  `json:"id"`
+	FirstName string `json:"first_name"`
+	Type      string `json:"type"`
+}
+
+/*
+type WebhookReqBody struct {
+	Message struct {
+		Text string `json:"text"`
+		Chat struct {
+			ID int64 `json:"id"`
+		} `json:"chat"`
+	} `json:"message"`
+}*/
+
+// WebhookReqBody message send by webhook
+type WebhookReqBody struct {
+	UpdateID int64 `json:"update_id"`
+	Message  struct {
+		MessageID int64 `json:"message_id"`
+		From      struct {
+			ID           int64  `json:"id"`
+			IsBot        bool   `json:"is_bot"`
+			FirstName    string `json:"first_name"`
+			LanguageCode string `json:"language_code"`
+		} `json:"from"`
+		Chat chat   `json:"chat"`
+		Date int    `json:"date"`
+		Text string `json:"text"`
+	} `json:"message"`
+}
+
+/*type webhookReqBody struct {
+	Message struct {
+		Text string `json:"text"`
+		Chat struct {
+			ID int64 `json:"id"`
+		} `json:"chat"`
+	} `json:"message"`
+}*/
 
 type messgeActivate struct {
 	Ok          bool   `json:"ok"`
@@ -92,6 +130,7 @@ func request(Apikey string, command string) []byte {
 
 }
 
+// GetWebhookInfo get status
 func GetWebhookInfo(Apikey string) {
 
 	var answer messageWebhookInfo
@@ -105,6 +144,7 @@ func GetWebhookInfo(Apikey string) {
 
 }
 
+// ActivateWebhook configure WebHook
 func ActivateWebhook(Apikey string, domain string) bool {
 	// https://api.telegram.org/bot[TU_TOKEN]/setWebhook?url=https://[TU_DOMINIO]/[CAMINO_AL_WEBHOOK]
 	var answer messgeActivate
@@ -119,7 +159,8 @@ func ActivateWebhook(Apikey string, domain string) bool {
 	return answer.Ok
 }
 
-func DeleteWebhook(Apikey string) bool {
+// DeleteWebHook remove webhook
+func DeleteWebHook(Apikey string) bool {
 	//var url = "https://api.telegram.org/bot" + Apikey + "/deleteWebhook"
 	var answer messageDeleteWebHook
 
@@ -132,6 +173,7 @@ func DeleteWebhook(Apikey string) bool {
 	return answer.Ok
 }
 
+// GetUpdates get messages no webhook mode
 func GetUpdates(Apikey string) bool {
 	var answer messageList
 
