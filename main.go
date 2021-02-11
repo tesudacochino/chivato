@@ -58,16 +58,18 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 // of the send message request
 // https://core.telegram.org/bots/api#sendmessage
 type sendMessageReqBody struct {
-	ChatID int64  `json:"chat_id"`
-	Text   string `json:"text"`
+	ChatID    int64  `json:"chat_id"`
+	Parsemode string `json:"parse_mode"`
+	Text      string `json:"text"`
 }
 
 // sayPolo takes a chatID and sends "polo" to them
 func sayPolo(chatID int64) error {
 	// Create the request body struct
 	reqBody := &sendMessageReqBody{
-		ChatID: chatID,
-		Text:   "el rey del odoo https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Goatse_Security_Logo.png/220px-Goatse_Security_Logo.png",
+		ChatID:    chatID,
+		Parsemode: "MarkdownV2",
+		Text:      "[ ](https://thispersondoesnotexist.com/image) *El rey del Odoo*",
 	}
 	// Create the JSON body from the struct
 	reqBytes, err := json.Marshal(reqBody)
@@ -117,7 +119,7 @@ func main() {
 			println(resp)
 		*/
 		message.GetWebhookInfo(config.Apikey)
-		println(message.DeleteWebhook(config.Apikey))
+		println(message.DeleteWebHook(config.Apikey))
 		println(message.GetUpdates(config.Apikey))
 		message.GetWebhookInfo(config.Apikey)
 	}
