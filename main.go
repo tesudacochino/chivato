@@ -15,38 +15,25 @@ import (
 
 // Create a struct that mimics the webhook response body
 // https://core.telegram.org/bots/api#update
-/*type webhookReqBody struct {
+type webhookReqBody struct {
 	Message struct {
 		Text string `json:"text"`
 		Chat struct {
 			ID int64 `json:"id"`
 		} `json:"chat"`
 	} `json:"message"`
-}*/
+}
 
 // Handler is called everytime telegram sends us a webhook event
 func Handler(res http.ResponseWriter, req *http.Request) {
-	/*
-		var body message.WebhookReqBody
-		msg, readErr := ioutil.ReadAll(req.Body)
-		if readErr != nil {
-			log.Fatal(readErr)
-		}
-		jsonErr := json.Unmarshal(msg, &body)
-		if jsonErr != nil {
-			log.Fatal(jsonErr)
-		}
-
-		println("esta fuera " + body.Message.Text)
-	*/
 	// First, decode the JSON response body
-	body := &message.WebhookReqBody{}
-
+	body := &webhookReqBody{}
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
 		fmt.Println("could not decode request body", err)
 		return
 	}
-	println("esta fuera " + string(strconv.FormatBool(body.Message.From.IsBot)))
+	fmt.Println((body.Message))
+
 	// Check if the message contains the word "marco"
 	// if not, return without doing anything
 	if !strings.Contains(strings.ToLower(body.Message.Text), "borja") {
@@ -55,7 +42,6 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 
 	// If the text contains marco, call the `sayPolo` function, which
 	// is defined below
-
 	if err := sayPolo(body.Message.Chat.ID); err != nil {
 		fmt.Println("error in sending reply:", err)
 		return
@@ -63,7 +49,6 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 
 	// log a confirmation message if the message is sent successfully
 	fmt.Println("reply sent")
-
 }
 
 //The below code deals with the process of sending a response message
@@ -114,8 +99,9 @@ func main() {
 
 	if config.WebhookEnable == true {
 		println("Activado: " + strconv.FormatBool(message.ActivateWebhook(config.Apikey, config.Webhookurl)))
+		message.GetWebhookInfo(config.Apikey)
 		if config.SslEnable == false {
-			fmt.Println("http")
+			fmt.Println("http" + config.Port)
 			http.ListenAndServe(":"+config.Port, http.HandlerFunc(Handler))
 		} else {
 			fmt.Println("https")
@@ -131,7 +117,7 @@ func main() {
 			println(resp)
 		*/
 		message.GetWebhookInfo(config.Apikey)
-		println(message.DeleteWebHook(config.Apikey))
+		println(message.DeleteWebhook(config.Apikey))
 		println(message.GetUpdates(config.Apikey))
 		message.GetWebhookInfo(config.Apikey)
 	}
